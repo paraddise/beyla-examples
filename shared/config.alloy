@@ -1,0 +1,40 @@
+otelcol.receiver.otlp "default" {
+  grpc {}
+  http {}
+
+  output {
+    metrics = [otelcol.processor.batch.default.input]
+    traces = [otelcol.processor.batch.default.input]
+  }
+}
+
+otelcol.processor.batch "default" {
+  output {
+    metrics = [otelcol.exporter.prometheus.default.input]
+    traces  = [otelcol.exporter.otlp.tempo.input]
+  }
+}
+
+otelcol.exporter.prometheus "default" {
+    forward_to = [prometheus.remote_write.mimir.receiver]
+}
+
+prometheus.remote_write "mimir" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+    tls_config {
+		  server_name = "prometheus.portal.domain.tld"
+		  insecure_skip_verify = true
+	}
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+    client {
+        endpoint = "tempo:4317"
+        tls {
+          insecure_skip_verify = true
+          insecure = true
+        }
+    }
+}
