@@ -1,0 +1,13 @@
+open_port: 8080
+service_name: youtrack
+log_level: DEBUG
+print_traces: true
+
+routes:
+  patterns:
+    - /hub/*
+    - /api/*
+
+# Experimental
+network:
+  enable: true

@@ -1,24 +1,4 @@
 services:
-  youtrack:
-    image: jetbrains/youtrack:2024.2.35942
-    volumes:
-      - './youtrack/data:/opt/youtrack/data'
-      - './youtrack/conf:/opt/youtrack/conf'
-      - './youtrack/logs:/opt/youtrack/logs'
-      - './youtrack/backups:/opt/youtrack/backups'
-    ports:
-      - 8080:8080
-
-  autoinstrumenter:
-    image: grafana/beyla:latest
-    pid: "service:youtrack"
-    privileged: true
-    environment:
-      # BEYLA_PRINT_TRACES: true
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318"
-      BEYLA_OPEN_PORT: 8080
-      # BEYLA_PROMETHEUS_PORT: 8999
-
   alloy:
     image: grafana/alloy:latest
     command:
@@ -30,6 +10,8 @@ services:
       - ./shared/config.alloy:/etc/alloy/config.alloy
     ports:
       - 12345:12345
+    networks:
+      - otlp_belya
 
   init:
     image: &tempoImage grafana/tempo:latest
@@ -40,6 +22,8 @@ services:
       - "/var/tempo"
     volumes:
       - ./tempo-data:/var/tempo
+    networks:
+      - otlp_belya
 
   tempo:
     image: *tempoImage
@@ -56,6 +40,8 @@ services:
       - "9411:9411"   # zipkin
     depends_on:
       - init
+    networks:
+      - otlp_belya
 
   prometheus:
     image: prom/prometheus:latest
@@ -68,6 +54,8 @@ services:
       - ./shared/prometheus.yaml:/etc/prometheus.yaml
     ports:
       - "9090:9090"
+    networks:
+      - otlp_belya
 
   grafana:
     image: grafana/grafana:11.0.0
@@ -80,7 +68,11 @@ services:
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor traceQLStreaming metricsSummary
     ports:
       - "3000:3000"
+    networks:
+      - otlp_belya
 
+networks:
+  otlp_belya: {}
   # jaeger:
   #   image: jaegertracing/all-in-one:1.51
   #   ports:
