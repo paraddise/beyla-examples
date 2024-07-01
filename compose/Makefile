@@ -14,7 +14,7 @@ akeneo-init:
 	cd akeneo
 	make
 akeneo-up:
-	docker compose -f akeneo/docker-compose.yml up -d --remove-orphans mysql httpd elasticsearch object-storage beyla-httpd beyla-elastic beyla-minio
+	docker compose -f akeneo/docker-compose.yml up -d --remove-orphans mysql httpd elasticsearch object-storage autoinstrumenter
 akeneo-stop:
 	docker compose -f akeneo/docker-compose.yml stop
 

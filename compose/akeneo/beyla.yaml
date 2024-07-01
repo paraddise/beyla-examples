@@ -1,7 +1,16 @@
-open_port: 80
+open_port: 80,9000,8888
 service_name: akeneo
 log_level: DEBUG
 print_traces: true
+
+# executable_name: php-fpm
+
+# discovery:
+#   services:
+#     - exe_path: php-fpm8.1
+#       name: akeneo-fpm
+#     - exe_path: httpd
+#       name: akeneo-apache
 
 routes:
   patterns:
