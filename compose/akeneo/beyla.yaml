@@ -5,12 +5,12 @@ print_traces: true
 
 # executable_name: php-fpm
 
-# discovery:
-#   services:
-#     - exe_path: php-fpm8.1
-#       name: akeneo-fpm
-#     - exe_path: httpd
-#       name: akeneo-apache
+discovery:
+  services:
+    - exe_path: php-fpm8.1
+      name: akeneo-fpm
+    - exe_path: httpd
+      name: akeneo-httpd
 
 routes:
   patterns:

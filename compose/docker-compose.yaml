@@ -19,6 +19,9 @@ services:
     entrypoint:
       - "chown"
       - "10001:10001"
+      # - chmod
+      # - '-R'
+      - "777"
       - "/var/tempo"
     volumes:
       - ./tempo-data:/var/tempo

@@ -10,9 +10,10 @@ youtrack-up:
 youtrack-stop:
 	docker compose -f youtrack/docker-compose.yaml stop
 
+.ONE_SHELL: akeneo-init
 akeneo-init:
-	cd akeneo
-	make
+	cd akeneo; make
+
 akeneo-up:
 	docker compose -f akeneo/docker-compose.yml up -d --remove-orphans mysql httpd elasticsearch object-storage autoinstrumenter
 akeneo-stop:
