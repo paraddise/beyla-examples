@@ -12,7 +12,7 @@ services:
       - compose_otlp_belya
 
   autoinstrumenter:
-    image: grafana/beyla:latest
+    image: grafana/beyla:main
     pid: "service:youtrack"
     privileged: true
     environment:

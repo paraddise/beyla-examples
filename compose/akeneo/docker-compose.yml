@@ -98,15 +98,15 @@ services:
       - 'pim'
 
   autoinstrumenter:
-    image: grafana/beyla:latest
+    image: grafana/beyla:main
     pid: "service:httpd"
     privileged: true
     environment:
       BEYLA_PRINT_TRACES: true
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318"
       # BEYLA_SYSTEM_WIDE: true
-      BEYLA_BPF_WAKEUP_LEN: 1
-      BEYLA_SKIP_GO_SPECIFIC_TRACERS: true
+      # BEYLA_BPF_WAKEUP_LEN: 1
+      # BEYLA_SKIP_GO_SPECIFIC_TRACERS: true
       BEYLA_DISCOVERY_POLL_INTERVAL: "500ms"
       # BEYLA_BPF_TRACK_REQUEST_HEADERS: "true"
       # BEYLA_OPEN_PORT: 80,9000

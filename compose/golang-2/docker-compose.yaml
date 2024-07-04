@@ -1,0 +1,82 @@
+version: "3.9"
+
+networks:
+  default:
+    name: http-db
+    driver: bridge
+  compose_otlp_belya:
+    external: {}
+
+services:
+  http-plus-db:
+    # depends_on:
+      # - jaeger
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    pid: "host"
+    ports:
+      - "8080:8080"
+    # volumes:
+      # - /proc:/host/proc
+    networks:
+      - compose_otlp_belya
+
+  # go-auto:
+  #   depends_on:
+  #     - http-plus-db
+  #   build:
+  #     context: ../..
+  #     dockerfile: Dockerfile
+  #   privileged: true
+  #   pid: "host"
+  #   environment:
+  #     # - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
+  #     # - OTEL_GO_AUTO_TARGET_EXE=/app/main
+  #     # - OTEL_GO_AUTO_INCLUDE_DB_STATEMENT=true
+  #     # - OTEL_SERVICE_NAME=httpPlusdb
+  #     # - OTEL_PROPAGATORS=tracecontext,baggage
+  #     - CGO_ENABLED=1
+  #   volumes:
+  #     - /proc:/host/proc
+  #   networks:
+  #     - compose_otlp_belya
+
+  autoinstrumenter:
+    image: grafana/beyla:main
+    pid: "service:http-plus-db"
+    privileged: true
+    environment:
+      BEYLA_PRINT_TRACES: true
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318"
+      # BEYLA_SYSTEM_WIDE: true
+      # BEYLA_BPF_WAKEUP_LEN: 1
+      # BEYLA_SKIP_GO_SPECIFIC_TRACERS: true
+      BEYLA_DISCOVERY_POLL_INTERVAL: "500ms"
+      # BEYLA_BPF_TRACK_REQUEST_HEADERS: "true"
+      BEYLA_OPEN_PORT: 8080
+      # BEYLA_EXECUTABLE_NAME: php-fpm
+      OTEL_SERVICE_NAME: "golang-2"
+      # BEYLA_PROMETHEUS_PORT: 8999
+    # command:
+    #   - -config
+    #   - /etc/beyla.conf
+    # volumes:
+    #   - ./beyla.yaml:/etc/beyla.conf
+      # - /sys/kernel/security:/sys/kernel/security
+    networks:
+      - compose_otlp_belya
+
+  # jaeger:
+  #   image: jaegertracing/all-in-one:latest
+  #   ports:
+  #     - "16686:16686"
+  #     - "14268:14268"
+  #   environment:
+  #     - COLLECTOR_OTLP_ENABLED=true
+  #     - LOG_LEVEL=debug
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 300M
+  #   restart: unless-stopped
